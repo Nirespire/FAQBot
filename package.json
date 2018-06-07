@@ -1,0 +1,18 @@
+{
+  "name": "slackbot",
+  "version": "1.0.0",
+  "description": "A Q&A Slackbot",
+  "main": "index.js",
+  "repository": "https://github.com/Nirespire/slackbot",
+  "author": "Sanjay Nair <sanjayhnair@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "botkit": "^0.6.14",
+    "dotenv": "^5.0.1",
+    "natural": "^0.6.1",
+    "sentiment": "^5.0.0"
+  },
+  "scripts": {
+    "dev": "node index.js"
+  }
+}
