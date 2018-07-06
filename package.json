@@ -9,8 +9,7 @@
   "dependencies": {
     "botkit": "^0.6.14",
     "dotenv": "^5.0.1",
-    "natural": "^0.6.1",
-    "sentiment": "^5.0.0"
+    "natural": "^0.6.1"
   },
   "scripts": {
     "dev": "node index.js"

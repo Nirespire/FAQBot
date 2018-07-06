@@ -66,3 +66,4 @@ typings/
 # Serverless directories
 .serverless
 .env
+classifier.json

@@ -1,0 +1,18 @@
+{
+    "self": {
+        "questions": [
+            "introduce yourself",
+            "sup",
+            "hi",
+            "hello"
+        ],
+        "answer": "Hello! I'm a chatbot tasked with answering your questions! `Beep, Boop` :robot_face:"
+    },
+    "world": {
+        "questions": [
+            "what is the world",
+            "answer to the universe and everything"
+        ],
+        "answer": "42"
+    }
+}
