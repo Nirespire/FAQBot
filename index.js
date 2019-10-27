@@ -4,7 +4,7 @@ const NLP = require('natural');
 
 // Provides a wrapper around the Slack API to easily
 // interact with the chat service
-const BotKit = require('botkit');
+const { RTMClient } = require('@slack/rtm-api');
 
 // Built-in Node library for loading files operations
 const fs = require('fs');
@@ -15,22 +15,11 @@ require('dotenv').config();
 // Create a new classifier to train
 const classifier = new NLP.LogisticRegressionClassifier();
 
-// What are the types of chats we want to consider
-// In this case, we only care about chats that come directly to the bot
-const scopes = [
-    'direct_mention',
-    'direct_message',
-    'mention'
-];
-
 // Get our Slack API token from the environment
 const token = process.env.SLACK_API_TOKEN;
 
-// Create a chatbot template that can be instantiated using Botkit
-const Bot = BotKit.slackbot({
-    debug: false,
-    storage: undefined
-});
+// Create a chatbot using the Real Time Message client API
+const rtm = new RTMClient(token);
 
 /**
  * Function to easily parse a given json file to a JavaScript Object
@@ -82,28 +71,27 @@ function interpret(phrase) {
 
 
 /**
- * Callback function for BotKit to call. Provided are the speech
- * object to reply and the message that was provided as input.
- * Function will take the input message, attempt to label it 
+ * Callback function for Slack RTM API to call. Provided is the message 
+ * that was input by the user.
+ * This function will take the input message text, attempt to label it 
  * using the trained classifier, and return the corresponding
  * answer from the training data set. If no label can be matched
  * with the set confidence interval, it will respond back saying
  * the message was not able to be understood.
  * 
- * @param {Object} speech 
  * @param {Object} message 
  */
-function handleMessage(speech, message) {
+async function handleMessage(message) {
     const interpretation = interpret(message.text);
-    console.log('InternChatBot heard: ', message.text);
-    console.log('InternChatBot interpretation: ', interpretation);
+    console.log('FAQ Bot heard: ', message.text);
+    console.log('FAQ Bot interpretation: ', interpretation);
 
     if (interpretation.guess && trainingData[interpretation.guess]) {
         console.log('Found response');
-        speech.reply(message, trainingData[interpretation.guess].answer);
+        await rtm.sendMessage(trainingData[interpretation.guess].answer, message.channel);
     } else {
         console.log('Couldn\'t match phrase')
-        speech.reply(message, 'Sorry, I\'m not sure what you mean');
+        await rtm.sendMessage('Sorry, I\'m not sure what you mean', message.channel);
     }
 }
 
@@ -129,17 +117,15 @@ Object.keys(trainingData).forEach((element, key) => {
 });
 
 
-
 // Configure the bot
-// .* means match any message test
-// The scopes we pass determine which kinds of messages we consider (in this case only direct message or mentions)
-// handleMessage is the function that will run when the bot matches a message based on the text and scope criteria
-Bot.hears('.*', scopes, handleMessage);
+// The Bot handles any event of type 'message' it receives
+rtm.on('message', handleMessage);
 
-// Instantiate a chatbot using the previously defined template and API token
+// Instantiate a chatbot
 // Open a connection to Slack's real time API to start messaging
-Bot.spawn({
-    token: token
-}).startRTM();
+(async () => {
+    const { self, team } = await rtm.start();
+    console.log(`Connected to ${team.name}.slack.com as ${self.name}`)
+})();
 
 

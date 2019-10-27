@@ -1,13 +1,13 @@
 {
   "name": "slackbot",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A Q&A Slackbot",
   "main": "index.js",
   "repository": "https://github.com/Nirespire/slackbot",
   "author": "Sanjay Nair <sanjayhnair@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "botkit": "^0.6.14",
+    "@slack/rtm-api": "^5.0.3",
     "dotenv": "^5.0.1",
     "natural": "^0.6.1"
   },
